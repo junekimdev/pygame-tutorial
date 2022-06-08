@@ -1,5 +1,6 @@
 import sys
 import os
+import random
 import pygame
 
 if not pygame.font:
@@ -31,6 +32,30 @@ def drawTxtCentered(surface, font, str, color=FONT_COLOR):
     surface.blit(text_surf, text_rect)
 
 
+def permute(list, index_1, index_2):
+    value_1 = list[index_1]
+    value_2 = list[index_2]
+    list[index_1] = value_2
+    list[index_2] = value_1
+
+
+def random_permute(list, end, *, start=0):
+    index_1 = random.randrange(start, end)
+    index_2 = random.randrange(start, end)
+    while(index_1 == index_2):
+        index_2 = random.randrange(start, end)
+    permute(list, index_1, index_2)
+
+
+def get_init_list(n, iter=10):
+    li = [i+1 for i in range(n-1)]
+    for i in range(iter):
+        random_permute(li, n-1)
+        random_permute(li, n-1)
+    li.append(n)
+    return li
+
+
 class Piece:
     def __init__(self, number, font):
         self.surf = pygame.Surface((PIECE_SIZE, PIECE_SIZE))
@@ -42,11 +67,14 @@ class Piece:
     def move(self, x, y):
         self.pos = self.pos.move(x, y)
 
+    def is_mouse_on(self, mouse_pos):
+        return self.pos.collidepoint(mouse_pos)
+
 
 class Puzzle:
     def __init__(self, font, background):
         self.background = background
-        self.pieces = [Piece(i+1, font) for i in range(16)]
+        self.pieces = [Piece(i, font) for i in get_init_list(16)]
         self._init_position()
 
     def _init_position(self):
@@ -68,6 +96,12 @@ class Puzzle:
             else:
                 blit_args.append((piece.surf, piece.pos))
         surf.blits(blit_args)
+
+    def find_by_mouse(self, mouse_pos):
+        for i, piece in enumerate(self.pieces):
+            if piece.is_mouse_on(mouse_pos):
+                return i
+        return -1
 
 
 def load_background(size):
@@ -104,8 +138,24 @@ def main():
     while True:
         # Event management
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                sys.exit()
+            match event.type:
+                case pygame.QUIT:
+                    sys.exit()
+                case pygame.KEYDOWN:  # event attr: key, mod, unicode, scancode
+                    match event.key:
+                        case pygame.K_UP:
+                            print("Up")
+                        case pygame.K_DOWN:
+                            print("Down")
+                        case pygame.K_LEFT:
+                            print("Left")
+                        case pygame.K_RIGHT:
+                            print("Right")
+                case pygame.MOUSEBUTTONUP:  # event attr: pos, button, touch
+                    if event.button == 1:
+                        idx = puzzle.find_by_mouse(event.pos)
+                        if idx != -1:
+                            print(idx)
 
         # Drawing a frame
 

@@ -27,16 +27,23 @@ def drawTxtCentered(surface, font, str, color=FONT_COLOR):
     surface.blit(text_surf, text_rect)
 
 
+def init_window(size):
+    window = pygame.display.set_mode(size, pygame.RESIZABLE)
+    background = pygame.Surface(size)
+    background.fill(BG_COLOR)
+    return window, background
+
+
 def main():
     pygame.init()
     pygame.display.set_caption(GAME_TITLE)
     fps_clock = pygame.time.Clock()
-    window = pygame.display.set_mode(WINDOW_SIZE, pygame.RESIZABLE)
     font_file = os.path.join(root_dir, FONT_FILENAME)
     font = pygame.font.Font(font_file, FONT_SIZE)
 
     # Splash Screen
-    window.fill(BG_COLOR)
+    window, background = init_window(WINDOW_SIZE)
+    window.blit(background, (0, 0))
     drawTxtCentered(window, font, GREETING_MSG)
     pygame.display.update()
 
@@ -46,11 +53,11 @@ def main():
             if event.type == pygame.QUIT:
                 sys.exit()
             if event.type == pygame.VIDEORESIZE:
-                window = pygame.display.set_mode(event.size, pygame.RESIZABLE)
+                window, background = init_window(event.size)
+                window.blit(background, (0, 0))
+                drawTxtCentered(window, font, GREETING_MSG)
 
         # Drawing a frame
-        window.fill(BG_COLOR)
-        drawTxtCentered(window, font, GREETING_MSG)
 
         # This should be at the end of each drawing a frame
         pygame.display.update()
