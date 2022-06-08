@@ -86,7 +86,7 @@ class Puzzle:
         self.pieces = [Piece(i, font) for i in get_init_list(16)]
         self._init_position()
         self.remove_area = None
-        self.update_index = 0
+        self.update_piece = None
 
     def _init_position(self):
         i = 0
@@ -99,9 +99,9 @@ class Puzzle:
                 i += 1
             pos_y += PIECE_SIZE + PIECE_GAP
 
-    def _set_update(self, remove_pos, moving_index):
+    def _set_update(self, remove_pos, update_piece):
         self.remove_area = remove_pos
-        self.update_index = moving_index
+        self.update_piece = update_piece
 
     def draw_all(self, surf):
         blit_args = []
@@ -113,14 +113,15 @@ class Puzzle:
         surf.blits(blit_args)
 
     def draw_updates(self, surf):
-        if not self.remove_area:
+        if not self.update_piece:
             return
         blit_args = []
         blit_args.append((self.background, self.remove_area,
                          self.remove_area))  # clear
-        piece = self.pieces[self.update_index]
-        blit_args.append((piece.surf, piece.pos))  # draw
+        blit_args.append(
+            (self.update_piece.surf, self.update_piece.pos))  # draw
         surf.blits(blit_args)
+        self.update_piece = None
         self.remove_area = None
 
     def find_by_mouse(self, mouse_pos):
@@ -153,20 +154,21 @@ class Puzzle:
 
     def move(self, i):
         where = self._where_to_move(i)
-        remove_area = self.pieces[i].pos
+        update_piece = self.pieces[i]
+        remove_area = update_piece.pos
         match where:
             case Move.UP:
                 self._permute(i, i-4)
-                self._set_update(remove_area, i-4)
+                self._set_update(remove_area, update_piece)
             case Move.DOWN:
                 self._permute(i, i+4)
-                self._set_update(remove_area, i+4)
+                self._set_update(remove_area, update_piece)
             case Move.LEFT:
                 self._permute(i, i-1)
-                self._set_update(remove_area, i-1)
+                self._set_update(remove_area, update_piece)
             case Move.RIGHT:
                 self._permute(i, i+1)
-                self._set_update(remove_area, i+1)
+                self._set_update(remove_area, update_piece)
             case Move.UNABLE:
                 pass
 
