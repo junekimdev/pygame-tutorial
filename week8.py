@@ -131,7 +131,7 @@ class Puzzle:
                 return i
         return -1
 
-    def _where_to_move(self, i):
+    def _find_direction_to_move(self, i):
         up_able = i > 3
         down_able = i < 12
         left_able = (i % 4) != 0
@@ -154,7 +154,7 @@ class Puzzle:
         permute(self.pieces, index_1, index_2)
 
     def move(self, i):
-        where = self._where_to_move(i)
+        where = self._find_direction_to_move(i)
         update_piece = self.pieces[i]
         remove_area = update_piece.pos
         match where:
