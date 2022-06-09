@@ -40,8 +40,8 @@ class Piece:
         draw_txt_centered(self.surf, font, str(number))
 
     def move(self, x, y):
-        self.pos.left = x
-        self.pos.top = y
+        self.pos.x = x
+        self.pos.y = y
 
 
 class Puzzle:
