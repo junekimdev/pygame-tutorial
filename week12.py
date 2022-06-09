@@ -17,6 +17,7 @@ WINDOW_SIZE = (500, 500)
 CONGRATS_SIZE = (300, 300)
 BG_COLOR = (170, 238, 187)
 GREETING_MSG = "안녕하세요"
+COMPETE_MSG = "완성! 참 잘했어요!!"
 FONT_SIZE = 32
 FONT_COLOR = (10, 10, 10)
 FONT_FILENAME = "GamjaFlower-Regular.ttf"
@@ -258,10 +259,12 @@ class Puzzle:
         return complete
 
 
-def load_congrats(size):
+def load_congrats(size, font):
     filename = os.path.join(root_dir, CONGRATS_IMG_FILENAME)
     image = pygame.image.load(filename)
-    return pygame.transform.scale(image, size).convert_alpha()
+    image = pygame.transform.scale(image, size).convert_alpha()
+    draw_txt_centered(image, font, COMPETE_MSG)
+    return image
 
 
 def load_background(size):
@@ -312,7 +315,7 @@ def main():
                 case EVENT.COMPLETE:
                     cx = window.get_width()/2
                     cy = window.get_height()/2
-                    congrats_img = load_congrats(CONGRATS_SIZE)
+                    congrats_img = load_congrats(CONGRATS_SIZE, font)
                     congrats_pos = congrats_img.get_rect(center=(cx, cy))
                     window.blit(congrats_img, congrats_pos)
                     pygame.display.update()
