@@ -154,10 +154,10 @@ class Puzzle:
         permute(self.pieces, index_1, index_2)
 
     def move(self, i):
-        where = self._find_direction_to_move(i)
+        direction = self._find_direction_to_move(i)
         update_piece = self.pieces[i]
         remove_area = update_piece.pos
-        match where:
+        match direction:
             case Move.UP:
                 self._permute(i, i-4)
                 self._set_update(remove_area, update_piece)
