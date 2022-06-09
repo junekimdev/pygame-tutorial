@@ -25,7 +25,7 @@ PIECE_GAP = 10
 PIECE_BG = (255, 255, 255)
 
 
-def drawTxtCentered(surface, font, str, color=FONT_COLOR):
+def draw_txt_centered(surface, font, str, color=FONT_COLOR):
     cx = surface.get_width() / 2
     cy = surface.get_height() / 2
     text_surf = font.render(str, True, color)
@@ -71,7 +71,7 @@ class Piece:
         self.number = number
         self.pos = self.surf.get_rect()
         self.surf.fill(PIECE_BG)
-        drawTxtCentered(self.surf, font, str(number))
+        draw_txt_centered(self.surf, font, str(number))
 
     def move(self, x, y):
         self.pos = self.pos.move(x, y)
@@ -194,7 +194,7 @@ def main():
 
     # Splash Screen
     window = init_window(WINDOW_SIZE)
-    drawTxtCentered(window, font, GREETING_MSG)
+    draw_txt_centered(window, font, GREETING_MSG)
     pygame.display.update()
     pygame.time.delay(1000)
 

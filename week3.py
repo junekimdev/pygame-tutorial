@@ -19,7 +19,7 @@ FONT_COLOR = (10, 10, 10)
 FONT_FILENAME = "GamjaFlower-Regular.ttf"
 
 
-def drawTxtCentered(surface, font, str, color=FONT_COLOR):
+def draw_txt_centered(surface, font, str, color=FONT_COLOR):
     cx = surface.get_width() / 2
     cy = surface.get_height() / 2
     text_surf = font.render(str, True, color)
@@ -44,7 +44,7 @@ def main():
     # Splash Screen
     window, background = init_window(WINDOW_SIZE)
     window.blit(background, (0, 0))
-    drawTxtCentered(window, font, GREETING_MSG)
+    draw_txt_centered(window, font, GREETING_MSG)
     pygame.display.update()
 
     while True:
@@ -55,7 +55,7 @@ def main():
             if event.type == pygame.VIDEORESIZE:
                 window, background = init_window(event.size)
                 window.blit(background, (0, 0))
-                drawTxtCentered(window, font, GREETING_MSG)
+                draw_txt_centered(window, font, GREETING_MSG)
 
         # Drawing a frame
 
