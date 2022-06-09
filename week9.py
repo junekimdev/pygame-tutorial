@@ -74,7 +74,8 @@ class Piece:
         draw_txt_centered(self.surf, font, str(number))
 
     def move(self, x, y):
-        self.pos = self.pos.move(x, y)
+        self.pos.left = x
+        self.pos.top = y
 
     def is_mouse_on(self, mouse_pos):
         return self.pos.collidepoint(mouse_pos)
