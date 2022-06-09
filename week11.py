@@ -83,7 +83,7 @@ class Animation:
         end_x, end_y = self.end_pos.topleft
 
         def func(i, start, end):
-            return start + (i+1) * (end-start) // self.total_frames
+            return start + (i+1) * (end-start) / self.total_frames
 
         if start_x != end_x:  # Moving horizonal
             li = [func(i, start_x, end_x) for i in range(self.total_frames)]
