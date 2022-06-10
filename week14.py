@@ -283,7 +283,6 @@ class Puzzle:
                 self._play_move_aud()
 
     def _is_complete(self):
-        return True
         complete = True
         for i, piece in enumerate(self.pieces):
             complete &= piece.number == i+1
