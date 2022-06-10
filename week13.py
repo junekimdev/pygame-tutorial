@@ -264,7 +264,6 @@ class Puzzle:
                 self._set_animation(update_piece, dest_pos)
 
     def _is_complete(self):
-        return True
         complete = True
         for i, piece in enumerate(self.pieces):
             complete &= piece.number == i+1
@@ -316,7 +315,7 @@ def main():
     background = load_background(WINDOW_SIZE)
     puzzle_size = (PIECE_SIZE*4, PIECE_SIZE*4)
     puzzle_img = load_puzzle_img(puzzle_size)
-    puzzle = Puzzle(font, background, puzzle_img, PIECE_NUM_ON)
+    puzzle = Puzzle(font, background, puzzle_img.copy(), PIECE_NUM_ON)
     window.blit(background, (0, 0))
     puzzle.draw_all(window)
 
@@ -343,12 +342,12 @@ def main():
                     pygame.display.update()
                     pygame.time.delay(1000)
 
-                    complete_img = load_puzzle_img(puzzle_size)
-                    complete_pos = complete_img.get_rect(center=(cx, cy))
-                    window.blit(complete_img, complete_pos)
+                    complete_pos = puzzle_img.get_rect(center=(cx, cy))
+                    window.blit(puzzle_img, complete_pos)
                     pygame.display.update()
                     pygame.time.delay(1000)
-                    puzzle = Puzzle(font, background, puzzle_img, PIECE_NUM_ON)
+                    puzzle = Puzzle(font, background,
+                                    puzzle_img.copy(), PIECE_NUM_ON)
                     window.blit(background, (0, 0))
                     puzzle.draw_all(window)
 
