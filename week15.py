@@ -28,17 +28,18 @@ CONGRATS_IMG_FILENAME = "confetti.png"
 PUZZLE_IMG_FILENAME = "velociraptor.jpg"
 RESTART_IMG_FILENAME = "restart.png"
 LEGAL_MOVE_AUD_FILENAME = "mixkit-legal-move.mp3"
-ILLEGAL_MOVE_AUD_FILENAME = "mixkit-illegal-move.mp3"
+UNABLE_MOVE_AUD_FILENAME = "mixkit-unable-move.mp3"
 COMPELTE_AUD_FILENAME = "mixkit-completion.mp3"
 RESTART_AUD_FILENAME = "mixkit-restart.mp3"
 
 PIECE_SIZE = 100
 PIECE_GAP = 0
 PIECE_BG = (255, 255, 255)
-PIECE_NUM_ON = True
 
 PADDING = 15
 RESTART_BTN_SIZE = (30, 30)
+NUM_ON_COLOR = (80, 80, 255)
+NUM_OFF_COLOR = (80, 80, 80)
 INFO_COLOR = (220, 220, 220)
 
 
@@ -89,10 +90,11 @@ class Move(Enum):
 
 
 class EVENT:
-    COMPLETE = pygame.USEREVENT
-    RESTART = pygame.USEREVENT + 1
-    TIMER_UP = pygame.USEREVENT + 2
-    COUNTER_UP = pygame.USEREVENT + 3
+    TIMER_UP = pygame.USEREVENT
+    COUNTER_UP = pygame.USEREVENT + 1
+    TOGGLE_NUM = pygame.USEREVENT + 2
+    RESTART = pygame.USEREVENT + 3
+    COMPLETE = pygame.USEREVENT + 4
 
 
 class Animation:
@@ -202,6 +204,11 @@ class Piece:
         rect = pygame.Rect(x, y, PIECE_SIZE, PIECE_SIZE)
         return image.subsurface(rect)
 
+    def redraw(self, image, number_on, font):
+        self.surf = self._assign_image(image, self.number)
+        if number_on:
+            draw_txt_centered(self.surf, font, str(self.number))
+
 
 class Puzzle:
     def __init__(self, font, background, image, number_on=False):
@@ -265,12 +272,18 @@ class Puzzle:
             (self.update_piece.surf, self.update_piece.pos))  # draw
         surf.blits(blit_args)
 
+    def toggle_number(self, image, number_on):
+        for piece in self.pieces:
+            piece.redraw(image, number_on, self.font)
+
     def _play_move_aud(self):
-        pygame.mixer.music.load(LEGAL_MOVE_AUD_FILENAME)
+        aud_file = os.path.join(root_dir, LEGAL_MOVE_AUD_FILENAME)
+        pygame.mixer.music.load(aud_file)
         pygame.mixer.music.play()
 
-    def _play_illegal_move_aud(self):
-        pygame.mixer.music.load((ILLEGAL_MOVE_AUD_FILENAME))
+    def _play_unable_move_aud(self):
+        aud_file = os.path.join(root_dir, UNABLE_MOVE_AUD_FILENAME)
+        pygame.mixer.music.load(aud_file)
         pygame.mixer.music.play()
 
     def find_by_mouse(self, mouse_pos):
@@ -318,7 +331,7 @@ class Puzzle:
                 dest_pos = self._permute_to_animate(i, i+1)
                 self._set_animation(update_piece, dest_pos)
             case Move.UNABLE:
-                self._play_illegal_move_aud()
+                self._play_unable_move_aud()
 
     def _find_empty(self):
         for i, piece in enumerate(self.pieces):
@@ -372,6 +385,11 @@ def load_congrats(font):
     return image
 
 
+def display_number_btn(btn_surf, font, number_on):
+    color = (80, 80, 255) if number_on else (80, 80, 80)
+    draw_txt_centered(btn_surf, font, "#", color)
+
+
 def init_window(size, color):
     window = pygame.display.set_mode(size)
     window.fill(color)
@@ -395,16 +413,26 @@ def main():
     cx = window.get_width()/2
     cy = window.get_height()/2
     background = load_image(WINDOW_SIZE, BG_IMG_FILENAME)
-    window.blit(background, (0, 0))
 
-    restart_btn = load_image(RESTART_BTN_SIZE, RESTART_IMG_FILENAME, True)
+    restart_btn = pygame.Surface((40, 40))
+    restart_img = load_image(RESTART_BTN_SIZE, RESTART_IMG_FILENAME, True)
+    img_pos = restart_img.get_rect(center=(20, 20))
+    restart_btn.blit(restart_img, img_pos)
     restart_pos = restart_btn.get_rect(
         bottomright=(cx*2 - PADDING, cy*2 - PADDING))
-    window.blit(restart_btn, restart_pos)
+
+    number_on = False
+    show_num_btn = pygame.Surface((40, 40))
+    display_number_btn(show_num_btn, font, number_on)
+    show_num_pos = show_num_btn.get_rect(bottomright=(
+        cx*2 - restart_pos.w - 10 - PADDING, cy*2 - PADDING))
+
+    window.blits([(background, (0, 0)), (restart_btn,
+                 restart_pos), (show_num_btn, show_num_pos)])
 
     puzzle_size = (PIECE_SIZE*4, PIECE_SIZE*4)
     puzzle_img = load_image(puzzle_size, PUZZLE_IMG_FILENAME)
-    puzzle = Puzzle(font, background, puzzle_img.copy(), PIECE_NUM_ON)
+    puzzle = Puzzle(font, background, puzzle_img.copy(), number_on)
     puzzle.draw_all(window)
 
     while True:
@@ -419,12 +447,15 @@ def main():
                         puzzle.move_to_empty(event.key)
 
                 case pygame.MOUSEBUTTONUP:  # event attr: pos, button, touch
-                    if not puzzle.animation and not puzzle.is_complete and event.button == 1:
+                    left_btn = event.button == 1
+                    if not puzzle.animation and not puzzle.is_complete and left_btn:
                         idx = puzzle.find_by_mouse(event.pos)
                         if idx != -1:
                             puzzle.move(idx)
-                    if event.button == 1 and restart_pos.collidepoint(event.pos):
+                    if left_btn and restart_pos.collidepoint(event.pos):
                         pygame.event.post(pygame.event.Event(EVENT.RESTART))
+                    if left_btn and show_num_pos.collidepoint(event.pos):
+                        pygame.event.post(pygame.event.Event(EVENT.TOGGLE_NUM))
 
                 case EVENT.TIMER_UP:
                     src, pos = puzzle.timer.get_blit_args(background, font)
@@ -434,18 +465,27 @@ def main():
                     src, pos = puzzle.counter.get_blit_args(background, font)
                     window.blit(src, pos)
 
+                case EVENT.TOGGLE_NUM:
+                    number_on = not number_on  # toggle
+                    puzzle.toggle_number(puzzle_img.copy(), number_on)
+                    puzzle.draw_all(window)
+                    display_number_btn(show_num_btn, font, number_on)
+                    window.blit(show_num_btn, show_num_pos)
+
                 case EVENT.RESTART:
-                    pygame.mixer.music.load(RESTART_AUD_FILENAME)
+                    aud_file = os.path.join(root_dir, RESTART_AUD_FILENAME)
+                    pygame.mixer.music.load(aud_file)
                     pygame.mixer.music.play()
-                    window.blit(background, (0, 0))
-                    window.blit(restart_btn, restart_pos)
+                    window.blits(
+                        [(background, (0, 0)), (restart_btn, restart_pos), (show_num_btn, show_num_pos)])
                     puzzle = Puzzle(font, background,
-                                    puzzle_img.copy(), PIECE_NUM_ON)
+                                    puzzle_img.copy(), number_on)
                     puzzle.draw_all(window)
 
                 case EVENT.COMPLETE:
                     # Play completion audio
-                    pygame.mixer.music.load(COMPELTE_AUD_FILENAME)
+                    aud_file = os.path.join(root_dir, COMPELTE_AUD_FILENAME)
+                    pygame.mixer.music.load(aud_file)
                     pygame.mixer.music.play()
 
                     # Congrats the gamer

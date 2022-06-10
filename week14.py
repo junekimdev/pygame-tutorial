@@ -25,7 +25,7 @@ BG_IMG_FILENAME = "wood_fence_gray.jpg"
 CONGRATS_IMG_FILENAME = "confetti.png"
 PUZZLE_IMG_FILENAME = "velociraptor.jpg"
 LEGAL_MOVE_AUD_FILENAME = "mixkit-legal-move.mp3"
-ILLEGAL_MOVE_AUD_FILENAME = "mixkit-illegal-move.mp3"
+UNABLE_MOVE_AUD_FILENAME = "mixkit-unable-move.mp3"
 COMPELTE_AUD_FILENAME = "mixkit-completion.mp3"
 RESTART_AUD_FILENAME = "mixkit-restart.mp3"
 
@@ -193,11 +193,13 @@ class Puzzle:
         surf.blits(blit_args)
 
     def _play_move_aud(self):
-        pygame.mixer.music.load(LEGAL_MOVE_AUD_FILENAME)
+        aud_file = os.path.join(root_dir, LEGAL_MOVE_AUD_FILENAME)
+        pygame.mixer.music.load(aud_file)
         pygame.mixer.music.play()
 
-    def _play_illegal_move_aud(self):
-        pygame.mixer.music.load((ILLEGAL_MOVE_AUD_FILENAME))
+    def _play_unable_move_aud(self):
+        aud_file = os.path.join(root_dir, UNABLE_MOVE_AUD_FILENAME)
+        pygame.mixer.music.load(aud_file)
         pygame.mixer.music.play()
 
     def find_by_mouse(self, mouse_pos):
@@ -245,7 +247,7 @@ class Puzzle:
                 dest_pos = self._permute_to_animate(i, i+1)
                 self._set_animation(update_piece, dest_pos)
             case Move.UNABLE:
-                self._play_illegal_move_aud()
+                self._play_unable_move_aud()
 
     def _find_empty(self):
         for i, piece in enumerate(self.pieces):
@@ -344,7 +346,8 @@ def main():
                             puzzle.move(idx)
                 case EVENT.COMPLETE:
                     # Play completion audio
-                    pygame.mixer.music.load(COMPELTE_AUD_FILENAME)
+                    aud_file = os.path.join(root_dir, COMPELTE_AUD_FILENAME)
+                    pygame.mixer.music.load(aud_file)
                     pygame.mixer.music.play()
 
                     # Congrats the gamer
@@ -361,7 +364,8 @@ def main():
                     pygame.time.delay(2000)
 
                     # Restart
-                    pygame.mixer.music.load(RESTART_AUD_FILENAME)
+                    aud_file = os.path.join(root_dir, RESTART_AUD_FILENAME)
+                    pygame.mixer.music.load(aud_file)
                     pygame.mixer.music.play()
                     window.blit(background, (0, 0))
                     puzzle = Puzzle(font, background,
