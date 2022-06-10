@@ -161,6 +161,7 @@ class Puzzle:
 
     def _set_animation(self, piece, dest):
         self.animation = Animation(self, piece, dest)
+        self._play_move_aud()
 
     def clear_animation(self):
         self.remove_area = None
@@ -233,19 +234,15 @@ class Puzzle:
             case Move.UP:
                 dest_pos = self._permute_to_animate(i, i-4)
                 self._set_animation(update_piece, dest_pos)
-                self._play_move_aud()
             case Move.DOWN:
                 dest_pos = self._permute_to_animate(i, i+4)
                 self._set_animation(update_piece, dest_pos)
-                self._play_move_aud()
             case Move.LEFT:
                 dest_pos = self._permute_to_animate(i, i-1)
                 self._set_animation(update_piece, dest_pos)
-                self._play_move_aud()
             case Move.RIGHT:
                 dest_pos = self._permute_to_animate(i, i+1)
                 self._set_animation(update_piece, dest_pos)
-                self._play_move_aud()
             case Move.UNABLE:
                 self._play_illegal_move_aud()
 
@@ -265,22 +262,18 @@ class Puzzle:
                 update_piece = self.pieces[empty_idx+4]
                 dest_pos = self._permute_to_animate(empty_idx+4, empty_idx)
                 self._set_animation(update_piece, dest_pos)
-                self._play_move_aud()
             case pygame.K_DOWN if down_able:
                 update_piece = self.pieces[empty_idx-4]
                 dest_pos = self._permute_to_animate(empty_idx-4, empty_idx)
                 self._set_animation(update_piece, dest_pos)
-                self._play_move_aud()
             case pygame.K_LEFT if left_able:
                 update_piece = self.pieces[empty_idx+1]
                 dest_pos = self._permute_to_animate(empty_idx+1, empty_idx)
                 self._set_animation(update_piece, dest_pos)
-                self._play_move_aud()
             case pygame.K_RIGHT if right_able:
                 update_piece = self.pieces[empty_idx-1]
                 dest_pos = self._permute_to_animate(empty_idx-1, empty_idx)
                 self._set_animation(update_piece, dest_pos)
-                self._play_move_aud()
 
     def _is_complete(self):
         complete = True
