@@ -9,7 +9,7 @@
 3. 파이썬 가상환경을 만드세요
    - `py -m venv .env`
 4. 파이썬 가상환경을 시작하세요
-   - `%CD%\.env\activate.bat`
+   - `%CD%\.env\Scripts\activate.bat`
 5. `pip`을 최신 버전으로 업그레이드하세요
    - `python -m pip install -U pip`
 6. `pip`을 통해 `pygame`을 설치하세요
