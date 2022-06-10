@@ -340,12 +340,12 @@ def main():
                     congrats_pos = congrats_img.get_rect(center=(cx, cy))
                     window.blit(congrats_img, congrats_pos)
                     pygame.display.update()
-                    pygame.time.delay(1000)
+                    pygame.time.delay(1500)
 
                     complete_pos = puzzle_img.get_rect(center=(cx, cy))
                     window.blit(puzzle_img, complete_pos)
                     pygame.display.update()
-                    pygame.time.delay(1000)
+                    pygame.time.delay(2000)
                     puzzle = Puzzle(font, background,
                                     puzzle_img.copy(), PIECE_NUM_ON)
                     window.blit(background, (0, 0))
