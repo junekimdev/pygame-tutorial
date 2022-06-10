@@ -353,8 +353,11 @@ def main():
                         if idx != -1:
                             puzzle.move(idx)
                 case EVENT.COMPLETE:
+                    # Play completion audio
                     pygame.mixer.music.load(COMPELTE_AUD_FILENAME)
                     pygame.mixer.music.play()
+
+                    # Congrats the gamer
                     cx = window.get_width()/2
                     cy = window.get_height()/2
                     congrats_img = load_congrats(CONGRATS_SIZE, font)
@@ -363,10 +366,13 @@ def main():
                     pygame.display.update()
                     pygame.time.delay(1500)
 
+                    # Show original image
                     complete_pos = puzzle_img.get_rect(center=(cx, cy))
                     window.blit(puzzle_img, complete_pos)
                     pygame.display.update()
                     pygame.time.delay(2000)
+
+                    # Restart
                     puzzle = Puzzle(font, background,
                                     puzzle_img.copy(), PIECE_NUM_ON)
                     window.blit(background, (0, 0))
