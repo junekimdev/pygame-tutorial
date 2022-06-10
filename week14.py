@@ -27,6 +27,7 @@ PUZZLE_IMG_FILENAME = "velociraptor.jpg"
 LEGAL_MOVE_AUD_FILENAME = "mixkit-legal-move.mp3"
 ILLEGAL_MOVE_AUD_FILENAME = "mixkit-illegal-move.mp3"
 COMPELTE_AUD_FILENAME = "mixkit-completion.mp3"
+RESTART_AUD_FILENAME = "mixkit-restart.mp3"
 
 PIECE_SIZE = 100
 PIECE_GAP = 0
@@ -317,6 +318,8 @@ def main():
     pygame.time.delay(1000)
 
     # Load the game
+    cx = window.get_width()/2
+    cy = window.get_height()/2
     background = load_image(WINDOW_SIZE, BG_IMG_FILENAME)
     window.blit(background, (0, 0))
 
@@ -345,9 +348,7 @@ def main():
                     pygame.mixer.music.play()
 
                     # Congrats the gamer
-                    cx = window.get_width()/2
-                    cy = window.get_height()/2
-                    congrats_img = load_congrats(CONGRATS_SIZE, font)
+                    congrats_img = load_congrats(font)
                     congrats_pos = congrats_img.get_rect(center=(cx, cy))
                     window.blit(congrats_img, congrats_pos)
                     pygame.display.update()
@@ -360,9 +361,11 @@ def main():
                     pygame.time.delay(2000)
 
                     # Restart
+                    pygame.mixer.music.load(RESTART_AUD_FILENAME)
+                    pygame.mixer.music.play()
+                    window.blit(background, (0, 0))
                     puzzle = Puzzle(font, background,
                                     puzzle_img.copy(), PIECE_NUM_ON)
-                    window.blit(background, (0, 0))
                     puzzle.draw_all(window)
 
         # Drawing a frame
