@@ -259,23 +259,22 @@ class Puzzle:
         return complete
 
 
-def load_congrats(size, font):
-    filename = os.path.join(root_dir, CONGRATS_IMG_FILENAME)
-    image = pygame.image.load(filename)
-    image = pygame.transform.scale(image, size).convert_alpha()
+def load_image(size, filename, transparent=False):
+    file = os.path.join(root_dir, filename)
+    image = pygame.image.load(file)
+    resized_image = pygame.transform.scale(image, size)
+    return resized_image.convert_alpha() if transparent else resized_image.convert()
+
+
+def load_congrats(font):
+    image = load_image(CONGRATS_SIZE, CONGRATS_IMG_FILENAME, True)
     draw_txt_centered(image, font, COMPETE_MSG)
     return image
 
 
-def load_background(size):
-    filename = os.path.join(root_dir, BG_IMG_FILENAME)
-    image = pygame.image.load(filename)
-    return pygame.transform.scale(image, size).convert()
-
-
-def init_window(size):
-    window = pygame.display.set_mode(size, pygame.RESIZABLE)
-    window.fill(BG_COLOR)
+def init_window(size, color):
+    window = pygame.display.set_mode(size)
+    window.fill(color)
     return window
 
 
@@ -287,15 +286,16 @@ def main():
     font = pygame.font.Font(font_file, FONT_SIZE)
 
     # Splash Screen
-    window = init_window(WINDOW_SIZE)
+    window = init_window(WINDOW_SIZE, BG_COLOR)
     draw_txt_centered(window, font, GREETING_MSG)
     pygame.display.update()
     pygame.time.delay(1000)
 
     # Load the game
-    background = load_background(WINDOW_SIZE)
-    puzzle = Puzzle(font, background)
+    background = load_image(WINDOW_SIZE, BG_IMG_FILENAME)
     window.blit(background, (0, 0))
+
+    puzzle = Puzzle(font, background)
     puzzle.draw_all(window)
 
     while True:
@@ -315,7 +315,7 @@ def main():
                 case EVENT.COMPLETE:
                     cx = window.get_width()/2
                     cy = window.get_height()/2
-                    congrats_img = load_congrats(CONGRATS_SIZE, font)
+                    congrats_img = load_congrats(font)
                     congrats_pos = congrats_img.get_rect(center=(cx, cy))
                     window.blit(congrats_img, congrats_pos)
                     pygame.display.update()

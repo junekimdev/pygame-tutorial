@@ -27,10 +27,10 @@ def draw_txt_centered(surface, font, str, color=FONT_COLOR):
     surface.blit(text_surf, text_rect)
 
 
-def init_window(size):
+def init_window(size, color):
     window = pygame.display.set_mode(size, pygame.RESIZABLE)
     background = pygame.Surface(size)
-    background.fill(BG_COLOR)
+    background.fill(color)
     return window, background
 
 
@@ -42,7 +42,7 @@ def main():
     font = pygame.font.Font(font_file, FONT_SIZE)
 
     # Splash Screen
-    window, background = init_window(WINDOW_SIZE)
+    window, background = init_window(WINDOW_SIZE, BG_COLOR)
     window.blit(background, (0, 0))
     draw_txt_centered(window, font, GREETING_MSG)
     pygame.display.update()

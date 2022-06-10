@@ -105,15 +105,15 @@ class Puzzle:
         return -1
 
 
-def load_background(size):
+def load_background(size, color):
     background = pygame.Surface(size)
-    background.fill(BG_COLOR)
+    background.fill(color)
     return background
 
 
-def init_window(size):
-    window = pygame.display.set_mode(size, pygame.RESIZABLE)
-    window.fill(BG_COLOR)
+def init_window(size, color):
+    window = pygame.display.set_mode(size)
+    window.fill(color)
     return window
 
 
@@ -125,15 +125,16 @@ def main():
     font = pygame.font.Font(font_file, FONT_SIZE)
 
     # Splash Screen
-    window = init_window(WINDOW_SIZE)
+    window = init_window(WINDOW_SIZE, BG_COLOR)
     draw_txt_centered(window, font, GREETING_MSG)
     pygame.display.update()
     pygame.time.delay(1000)
 
     # Load the game
-    background = load_background(WINDOW_SIZE)
-    puzzle = Puzzle(font, background)
+    background = load_background(WINDOW_SIZE, BG_COLOR)
     window.blit(background, (0, 0))
+
+    puzzle = Puzzle(font, background)
     puzzle.draw_all(window)
 
     while True:
