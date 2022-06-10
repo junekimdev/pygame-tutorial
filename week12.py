@@ -292,6 +292,8 @@ def main():
     pygame.time.delay(1000)
 
     # Load the game
+    cx = window.get_width()/2
+    cy = window.get_height()/2
     background = load_image(WINDOW_SIZE, BG_IMG_FILENAME)
     window.blit(background, (0, 0))
 
@@ -313,15 +315,16 @@ def main():
                         if idx != -1:
                             puzzle.move(idx)
                 case EVENT.COMPLETE:
-                    cx = window.get_width()/2
-                    cy = window.get_height()/2
+                    # Congrats the gamer
                     congrats_img = load_congrats(font)
                     congrats_pos = congrats_img.get_rect(center=(cx, cy))
                     window.blit(congrats_img, congrats_pos)
                     pygame.display.update()
                     pygame.time.delay(1500)
-                    puzzle = Puzzle(font, background)
+
+                    # Restart
                     window.blit(background, (0, 0))
+                    puzzle = Puzzle(font, background)
                     puzzle.draw_all(window)
 
         # Drawing a frame

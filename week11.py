@@ -303,11 +303,14 @@ def main():
                         if idx != -1:
                             puzzle.move(idx)
                 case EVENT.COMPLETE:
+                    # Congrats the gamer
                     draw_txt_centered(window, font, COMPETE_MSG)
                     pygame.display.update()
                     pygame.time.delay(1500)
-                    puzzle = Puzzle(font, background)
+
+                    # Restart
                     window.blit(background, (0, 0))
+                    puzzle = Puzzle(font, background)
                     puzzle.draw_all(window)
 
         # Drawing a frame
