@@ -33,10 +33,7 @@ def draw_txt_centered(surface, font, str, color=FONT_COLOR):
 
 
 def permute(list, index_1, index_2):
-    value_1 = list[index_1]
-    value_2 = list[index_2]
-    list[index_1] = value_2
-    list[index_2] = value_1
+    list[index_1], list[index_2] = list[index_2], list[index_1]
 
 
 def random_permute(list, end, *, start=0):

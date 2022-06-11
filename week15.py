@@ -58,10 +58,7 @@ def draw_txt_bottomleft(surface, font, str, color=FONT_COLOR):
 
 
 def permute(list, index_1, index_2):
-    value_1 = list[index_1]
-    value_2 = list[index_2]
-    list[index_1] = value_2
-    list[index_2] = value_1
+    list[index_1], list[index_2] = list[index_2], list[index_1]
 
 
 def random_permute(list, end, *, start=0):
@@ -147,7 +144,7 @@ class Timer:
         ss = self.num % 60
         return f"{mm:0>2d}:{ss:0>2d}"
 
-    def get_blit_args(self, background, font, count_up=True):
+    def get_blit_args(self, font, count_up=True):
         if count_up:
             self._count()
         str = self._get_str()
@@ -170,7 +167,7 @@ class Counter:
     def _get_str(self):
         return f"이동수: {self.num:d}"
 
-    def get_blit_args(self, background, font, count_up=True):
+    def get_blit_args(self, font, count_up=True):
         if count_up:
             self._count()
         str = self._get_str()
@@ -249,10 +246,8 @@ class Puzzle:
 
     def draw_all(self, surf):
         blit_args = []
-        blit_args.append(self.timer.get_blit_args(
-            self.background, self.font, False))
-        blit_args.append(self.counter.get_blit_args(
-            self.background, self.font, False))
+        blit_args.append(self.timer.get_blit_args(self.font, False))
+        blit_args.append(self.counter.get_blit_args(self.font, False))
         for piece in self.pieces:
             if piece.number == 16:
                 blit_args.append((self.background, piece.pos, piece.pos))
@@ -308,9 +303,8 @@ class Puzzle:
         return Move.UNABLE
 
     def _permute_to_animate(self, index_update, index_empty):
-        start_pos = self.pieces[index_update].pos.copy()
         dest_pos = self.pieces[index_empty].pos.copy()
-        self.pieces[index_empty].pos = start_pos
+        self.pieces[index_empty].pos = self.pieces[index_update].pos.copy()
         permute(self.pieces, index_update, index_empty)
         return dest_pos
 
@@ -443,29 +437,38 @@ def main():
                     sys.exit()
 
                 case pygame.KEYDOWN:  # event attr: key, mod, unicode, scancode
-                    if not puzzle.animation:
-                        puzzle.move_to_empty(event.key)
+                    if puzzle.is_complete or puzzle.animation:
+                        continue
+                    puzzle.move_to_empty(event.key)
 
                 case pygame.MOUSEBUTTONUP:  # event attr: pos, button, touch
-                    left_btn = event.button == 1
-                    if not puzzle.animation and not puzzle.is_complete and left_btn:
+                    if event.button != 1:  # filter through left button clicks
+                        continue
+                    # Only left buttons
+                    if not puzzle.animation and not puzzle.is_complete:
                         idx = puzzle.find_by_mouse(event.pos)
                         if idx != -1:
                             puzzle.move(idx)
-                    if left_btn and restart_pos.collidepoint(event.pos):
+                    if restart_pos.collidepoint(event.pos):
                         pygame.event.post(pygame.event.Event(EVENT.RESTART))
-                    if left_btn and show_num_pos.collidepoint(event.pos):
+                    if show_num_pos.collidepoint(event.pos):
                         pygame.event.post(pygame.event.Event(EVENT.TOGGLE_NUM))
 
                 case EVENT.TIMER_UP:
-                    src, pos = puzzle.timer.get_blit_args(background, font)
+                    if puzzle.is_complete:
+                        continue
+                    src, pos = puzzle.timer.get_blit_args(font)
                     window.blit(src, pos)
 
                 case EVENT.COUNTER_UP:
-                    src, pos = puzzle.counter.get_blit_args(background, font)
+                    if puzzle.is_complete:
+                        continue
+                    src, pos = puzzle.counter.get_blit_args(font)
                     window.blit(src, pos)
 
                 case EVENT.TOGGLE_NUM:
+                    if puzzle.is_complete:
+                        continue
                     number_on = not number_on  # toggle
                     puzzle.toggle_number(puzzle_img.copy(), number_on)
                     puzzle.draw_all(window)

@@ -34,10 +34,7 @@ def draw_txt_centered(surface, font, str, color=FONT_COLOR):
 
 
 def permute(list, index_1, index_2):
-    value_1 = list[index_1]
-    value_2 = list[index_2]
-    list[index_1] = value_2
-    list[index_2] = value_1
+    list[index_1], list[index_2] = list[index_2], list[index_1]
 
 
 def random_permute(list, end, *, start=0):
@@ -190,16 +187,13 @@ class Puzzle:
         return Move.UNABLE
 
     # def _permute(self, index_1, index_2):
-    #     pos_1 = self.pieces[index_1].pos
-    #     pos_2 = self.pieces[index_2].pos
-    #     self.pieces[index_1].pos = pos_2
-    #     self.pieces[index_2].pos = pos_1
+    #     self.pieces[index_1].pos, self.pieces[index_2].pos = (
+    #         self.pieces[index_2].pos, self.pieces[index_1].pos)
     #     permute(self.pieces, index_1, index_2)
 
     def _permute_to_animate(self, index_update, index_empty):
-        start_pos = self.pieces[index_update].pos.copy()
         dest_pos = self.pieces[index_empty].pos.copy()
-        self.pieces[index_empty].pos = start_pos
+        self.pieces[index_empty].pos = self.pieces[index_update].pos.copy()
         permute(self.pieces, index_update, index_empty)
         return dest_pos
 
@@ -280,7 +274,7 @@ def main():
     # Load the game
     background = load_background(WINDOW_SIZE, BG_COLOR)
     window.blit(background, (0, 0))
-    
+
     puzzle = Puzzle(font, background)
     puzzle.draw_all(window)
 
