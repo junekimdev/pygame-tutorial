@@ -16,7 +16,7 @@ GAME_TITLE = "15 퍼즐"
 WINDOW_SIZE = (500, 500)
 BG_COLOR = (170, 238, 187)
 GREETING_MSG = "안녕하세요"
-COMPETE_MSG = "완성! 참 잘했어요!!"
+COMPLETE_MSG = "완성! 참 잘했어요!!"
 FONT_SIZE = 32
 FONT_COLOR = (10, 10, 10)
 FONT_FILENAME = "GamjaFlower-Regular.ttf"
@@ -300,7 +300,7 @@ def main():
                             puzzle.move(idx)
                 case EVENT.COMPLETE:
                     # Congrats the gamer
-                    draw_txt_centered(window, font, COMPETE_MSG)
+                    draw_txt_centered(window, font, COMPLETE_MSG)
                     pygame.display.update()
                     pygame.time.delay(1500)
 

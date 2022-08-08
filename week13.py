@@ -17,7 +17,7 @@ WINDOW_SIZE = (500, 500)
 CONGRATS_SIZE = (300, 300)
 BG_COLOR = (170, 238, 187)
 GREETING_MSG = "안녕하세요"
-COMPETE_MSG = "완성! 참 잘했어요!!"
+COMPLETE_MSG = "완성! 참 잘했어요!!"
 FONT_SIZE = 32
 FONT_COLOR = (10, 10, 10)
 FONT_FILENAME = "GamjaFlower-Regular.ttf"
@@ -277,7 +277,7 @@ def load_image(size, filename, transparent=False):
 
 def load_congrats(font):
     image = load_image(CONGRATS_SIZE, CONGRATS_IMG_FILENAME, True)
-    draw_txt_centered(image, font, COMPETE_MSG)
+    draw_txt_centered(image, font, COMPLETE_MSG)
     return image
 
 
