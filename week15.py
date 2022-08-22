@@ -1,4 +1,3 @@
-from multiprocessing import Event
 import sys
 import os
 import random
